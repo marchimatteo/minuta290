@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Rimozione avvisi</title>
+        <link href="./NON TOCCARE/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container py-4">
+            <header class="pb-3 mb-4 border-bottom">
+                <div class="d-flex align-items-center text-body-emphasis text-decoration-none">
+                    <span class="fs-4">Rimozione avvisi da minuta 290</span>
+                </div>
+            </header>
+
+            <!-- Errors -->
+            <div id="alertNot290" hidden>
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    <div>
+                        Il file selezionato non è una minuta di ruolo 290.
+                    </div>
+                </div>
+            </div>
+            <div id="alertMoreThanOneRuolo" hidden>
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    <div>
+                        Il file selezionato ha più di un ruolo, questo programma supporta solamente un ruolo per minuta.
+                    </div>
+                </div>
+            </div>
+            <div id="alertNoneFound" hidden>
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    <div>
+                        Nessuna partita trovata per i codici fiscali inseriti.
+                    </div>
+                </div>
+            </div>
+            <div id="alertInvalidCFs" hidden>
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    <div>
+                        Attenzione, i seguenti codici fiscali non sono validi (lunghezza inferiore a 16 caratteri): <span id="invalidCFsList"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="alertSomeNotFound" hidden>
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    <div>
+                        Attenzione, non è stata trovata corrispondenza per i seguenti codici fiscali: <span id="notFoundCFsList"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load file phase -->
+            <div id="phaseOne">
+                <div class="p-5 mb-4 bg-dark-subtle rounded-3">
+                    <div class="container-fluid py-5">
+                        <h1 class="display-5 fw-bold">Carica il .txt</h1>
+                        <p class="col-md-8 fs-4">Per prima cosa bisognerà caricare il file .txt della minuta 290, così come inviato dall'Agenzia.</p>
+                        <div>
+                            <label for="formFileLg" class="form-label"></label>
+                            <input class="form-control form-control-lg" id="inputFile" type="file" accept=".txt">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copy paste CFs to remove phase -->
+            <div id="phaseTwo" hidden>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                        </svg>
+                        <span class="ms-1">File selezionato</span>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-2">Nome file:</dt>
+                            <dd id="displayedFilename" class="col-sm-10"></dd>
+    
+                            <dt class="col-sm-2">Numero lettere:</dt>
+                            <dd id="displayNLettere" class="col-sm-10"></dd>
+    
+                            <dt class="col-sm-2">Importo totale:</dt>
+                            <dd id="displayTotImporto" class="col-sm-10 mb-0"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div id="inputCodiciFiscaliSection" class="card">
+                    <div class="card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16">
+                            <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5ZM9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8Zm1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Z"/>
+                            <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2ZM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96c.026-.163.04-.33.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1.006 1.006 0 0 1 1 12V4Z"/>
+                        </svg>
+                        <span class="ms-1">Inserisci i codici fiscali da rimuovere</span>
+                    </div>
+                    <div class="card-body">
+                        <!--
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
+                        <form id="codiciFiscaliInputForm">
+                            <div class="mb-3">
+                                <label for="codiciFiscaliTextArea" class="form-label">Copia/incolla da Excel la lista di <strong>codici fiscali</strong> relativi alle lettere che <strong>non</strong> devono essere mandate in coattivo, dovrà essere presente un codice fiscale per riga.</label>
+                                <textarea class="form-control" id="codiciFiscaliTextArea" rows="5" autocomplete="off" required style="resize: none;"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col text-center">
+                                    <button type="submit" class="btn btn-primary">Rimuovi</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- result -->
+                <div id="resultSection" class="row" hidden>
+                    <div class="col-md-6">
+                        <div class="h-100 p-5 bg-warning rounded-3">
+                            <h2>Coattivo</h2>
+                            <dl class="row">
+                                <dt class="col-sm-4">Numero lettere:</dt>
+                                <dd id="displayNLettereCoattivo" class="col-sm-8"></dd>
+        
+                                <dt class="col-sm-4">Importo:</dt>
+                                <dd id="displayTotImportoCoattivo" class="col-sm-8 mb-0"></dd>
+                            </dl>                           
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Scarica
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a id="linkTxtCoattivoAder" class="dropdown-item" href="">TXT coattivo AdER</a></li>
+                                    <li><a id="linkExcelCoattivoDettaglio" class="dropdown-item" href="">Excel dettaglio</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="h-100 p-5 bg-info  rounded-3">
+                            <h2>Discarico</h2>
+                            <dl class="row">
+                                <dt class="col-sm-4">Numero lettere:</dt>
+                                <dd id="displayNLettereDiscarico" class="col-sm-8"></dd>
+        
+                                <dt class="col-sm-4">Importo:</dt>
+                                <dd id="displayTotImportoDiscarico" class="col-sm-8 mb-0"></dd>
+                            </dl>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Scarica
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a id="linkExcelFormatDiscarichi" class="dropdown-item" href="">Excel discarico AdER</a></li>
+                                    <li><a id="linkExcelDiscaricoDettaglio" class="dropdown-item" href="">Excel dettaglio</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result phase -->
+        </div>
+        
+        <script src="./NON TOCCARE/bootstrap.bundle.min.js"></script>
+
+        <!-- To be able to save .txt with the appropriate encoding -->
+        <!-- see: https://stackoverflow.com/questions/56092285/blob-charset-for-csv-file -->
+        <script>
+            // we need to force installation of the library
+            // by removing the built-in API
+            window.TextEncoder = null;
+        </script>
+        <script src="./NON TOCCARE/inexorabletash.text-encoding/encoding-indexes.js"></script>
+        <script src="./NON TOCCARE/inexorabletash.text-encoding/encoding.js"></script>
+        
+        <script src="./NON TOCCARE/FileSaver.min.js"></script>
+
+        <script lang="javascript" src="./NON TOCCARE/xlsx.full.min.js"></script>
+
+        
+        <script>
+            window.onload = function() {
+                let original290 = [];
+                let coattivo290 = [];
+                let discarico290 = [];
+                const content = document.getElementById("content");
+
+                // Initialize FileReader
+                const reader = new FileReader();
+                reader.addEventListener(
+                    "load",
+                    () => {
+                        fileCheck(reader.result);
+                    },
+                    false,
+                );
+
+                // Initialize file selection button
+                document.getElementById('inputFile').addEventListener('change', event => {
+                    let fileList = event.target.files;
+                    //console.log(fileList);
+                    if (fileList && fileList.length > 0) {
+                        updateFilename(fileList[0].name);
+                        // This will trigger a reader event which will make the execution continue
+                        reader.readAsText(fileList[0], "windows-1252");
+                    } else {
+                        console.error("Nessun file selezionato.");
+                    }
+                });
+
+                // Initialize codici fiscali form
+                document.getElementById("codiciFiscaliInputForm").addEventListener(
+                    "submit",
+                    event => {
+                        event.preventDefault();
+                        let input = document.getElementById("codiciFiscaliTextArea").value;
+                        let splitted = input.split(/r?\n/);
+                        processCodiciFiscali(splitted);
+                        //console.log(splitted);
+                    },
+                    true
+                );
+
+                // TODO: also check has only one N1
+                /**
+                 * @param {string|null} result
+                 */
+                function fileCheck(result) {
+                    if (result === null || !is290(result)) {
+                        showAlertNot290();
+                    } else if (!hasOnly1N1(result)) {
+                        showAlertMoreThanOneRuolo();
+                    } else {
+                        // File is good, we can show the user the next phase
+                        hideAlertNot290();
+                        hideAlertMoreThanOneRuolo();
+                        //original290 = result.split(/r?\n/);
+                        original290 = result.split(/\r\n/);
+                        updateFileDetails(original290);
+                        document.getElementById("phaseOne").setAttribute("hidden", "");
+                        document.getElementById("phaseTwo").removeAttribute("hidden");
+                    }
+                }
+
+                // Process the copy/pasted codici fiscali
+                function processCodiciFiscali(codiciFiscali) {
+                    coattivo290 = [];
+                    discarico290 = [];
+                    hideAlertNoneFound();
+                    hideAlertInvalidCFs();
+                    hideAlertSomeNotFound();
+                    let codiciInvalidi = [];
+                    let codiciNonTrovati = [];
+                    let codiciTrovati = []; // Might contain duplicates
+                    let partiteTrovate = new Set();
+
+                    codiciFiscali.forEach(codice => {
+                        codice = codice.trim();
+                        if (codice.length < 1) {
+                            return;
+                        }
+                        if (codice.length != 16) {
+                            codiciInvalidi.push(codice);
+                            return;
+                        }
+                        
+                        let partite = getCodiciPartiteFromCodiceFiscale(original290, codice);
+                        if (partite.length < 1) {
+                            codiciNonTrovati.push(codice);
+                            return;
+                        }
+
+                        codiciTrovati = codiciTrovati.concat(codice);
+                        partite.forEach(partita => partiteTrovate.add(partita));
+                    });
+                    
+                    if (codiciInvalidi.length > 0) {
+                        showAlertInvalidCFs(codiciInvalidi);
+                    }
+                    if (partiteTrovate.size < 1) {
+                        showAlertNoneFound();
+                        return;
+                    }
+                    if (codiciNonTrovati.length > 0) {
+                        showAlertSomeNotFound(codiciNonTrovati);
+                    }
+
+                    createNewMinute(partiteTrovate);
+
+                    writeCoattivoTotals();
+                    writeDiscarichiTotals();
+                    createCoattivoTxtFile();
+                    createExcelDettaglioFile(coattivo290, "linkExcelCoattivoDettaglio", "Dettaglio coattivo.xlsx");
+                    createExcelDettaglioFile(discarico290, "linkExcelDiscaricoDettaglio", "Dettaglio discarico.xlsx")
+                    createExcelFormatDiscarichiFile(discarico290);
+
+                    document.getElementById("inputCodiciFiscaliSection").setAttribute("hidden", "");
+                    document.getElementById("resultSection").removeAttribute("hidden");
+                }
+
+                function writeCoattivoTotals() {
+                    let totLetters = 0;
+                    let totImposta = 0;
+                    coattivo290.forEach(line => {
+                        if (isN2(line)) {
+                            totLetters++;
+                        } else if (isN4(line)) {
+                            totImposta += parseInt(getImpostaFromN4(line));
+                        }
+                    });
+
+                    document.getElementById("displayNLettereCoattivo").innerText = totLetters;
+                    document.getElementById("displayTotImportoCoattivo").innerText = (totImposta/100).toFixed(2) + " €";
+                }
+
+                function writeDiscarichiTotals() {
+                    let totLetters = 0;
+                    let totImposta = 0;
+                    discarico290.forEach(line => {
+                        if (isN2(line)) {
+                            totLetters++;
+                        } else if (isN4(line)) {
+                            totImposta += parseInt(getImpostaFromN4(line));
+                        }
+                    });
+
+                    document.getElementById("displayNLettereDiscarico").innerText = totLetters;
+                    document.getElementById("displayTotImportoDiscarico").innerText = (totImposta/100).toFixed(2) + " €";
+                }
+
+                function createExcelDettaglioFile(minuta, linkElementID, filename) {
+                    //let anagrafiche = { codice_partita: { anagrafica } }
+                    //let descriptions = { codice_partita: { descriptions }}
+                    //let contabili = { codice_partita: [ { contabile } ] }
+                    let anagrafiche = {};
+                    let descriptions = {};
+                    let contabili = {};
+                    minuta.forEach(line => {
+                        if (isN2(line)) {
+                            let dataNascita = getDataNascitaFromN2(line);
+                            anagrafiche[getCodicePartitaFromN(line)] = makeAnagraficaObj(
+                                getCognomeFromN2(line).trim(),
+                                getNomeFromN2(line).trim(),
+                                //getDataNascitaFromN2(line),
+                                new Date(dataNascita.substring(4), dataNascita.substring(2, 4) - 1, dataNascita.substring(0, 2)),
+                                getSessoFromN2(line),
+                                getCodiceFiscaleFromN2(line),
+                                getIndirizzoFromN2(line).trim(),
+                                getLocalitaFromN2(line).trim(),
+                                getCAPFromN2(line),   
+                            );
+                        } else if (isNP(line)) {
+                            descriptions[getCodicePartitaFromN(line)] = makeDescriptionsObj(
+                                getDescription1(line).trim(),
+                                getDescription2(line).trim(),
+                                getDescription3(line).trim(),
+                            );
+                        } else if (isN4(line)) {
+                            let contabile = {
+                                "Anno": getAnnoRiferimentoFromN4(line),
+                                "Imposta": parseInt(getImpostaFromN4(line))/100,
+                                "Informazioni": getInformazioniFromN4(line).trim(),
+                            }
+                            let partita = getCodicePartitaFromN(line);
+                            if (contabili.hasOwnProperty(partita)) {
+                                contabili[partita].push(contabile);
+                            } else {
+                                contabili[partita] = [contabile];
+                            }
+                        }
+                    });
+
+                    let linesForExcel = [];
+                    for (let partita in contabili) {
+                        let anagrafica = makeAnagraficaObj();
+                        if (anagrafiche.hasOwnProperty(partita)) {
+                            anagrafica = anagrafiche[partita];
+                        }
+
+                        let descrizione = makeDescriptionsObj();
+                        if (descriptions.hasOwnProperty(partita)) {
+                            descrizione = descriptions[partita];
+                        }
+
+                        let newLines = [];
+                        contabili[partita].forEach(contabile => {
+                            newLines.push({
+                                "Partita": extractNDocFromPartita(partita),
+                                ...anagrafica,
+                                ...descrizione,
+                                ...contabile
+                            });
+                        });
+
+                        linesForExcel = linesForExcel.concat(newLines);
+                    }
+
+                    let workbook = XLSX.utils.book_new();
+                    const worksheet = XLSX.utils.json_to_sheet(linesForExcel);
+                    worksheet["!cols"] = [
+                        { width: 13 },
+                        { width: 13 },
+                        { width: 13 },
+                        { width: 13 },
+                        { width: 6 },
+                        { width: 21 },
+                        { width: 27 },
+                        { width: 25 },
+                        { width: 6 },
+                        { width: 47 },
+                        { width: 69 },
+                        { width: 12 },
+                        { width: 5 },
+                        { width: 9 },
+                        { width: 72 },
+                    ];
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Foglio1");
+                    document.getElementById(linkElementID).addEventListener(
+                        "click",
+                        event => {
+                            event.preventDefault();
+                            XLSX.writeFile(workbook, filename, { cellStyles: true });
+                        },
+                        true
+                    );
+                }
+
+                function createExcelFormatDiscarichiFile(minuta) {
+                    let newLines = {};
+
+                    //First we gather all the codici fiscale
+                    minuta.forEach(line => {
+                        if (isN2(line)) {
+                            newLines[getCodicePartitaFromN(line)] = {
+                                "AMBITO": 115,
+                                "CODICE_ENTE": 19887,
+                                "IMPOSTA_SERVIZIO": "05",
+                                "CF/P.IVA": getCodiceFiscaleFromN2(line),
+                                "CODICE_DOCUMENTO": extractNDocFromPartita(getCodicePartitaFromN(line)),
+                                "ANNO_TRIBUTO": "9999",
+                                "CODICE_TRIBUTO": 9999,
+                                "PROGRESSIVO_TRIBUTO": 999,
+                                "IMPORTO_TRIBUTO": 0,
+                                "CODICE_CAUSALE": "D",
+                                "IDENTIFICATIVO_PROVVEDIMENTO": "discarico",
+                            };
+                        }
+                    });
+
+                    //Then we sum all the importo for each line
+                    minuta.forEach(line => {
+                        if (isN4(line)) {
+                            let partita = getCodicePartitaFromN(line);
+                            if (newLines.hasOwnProperty(partita)) {
+                                newLines[partita]["IMPORTO_TRIBUTO"] += (parseInt(getImpostaFromN4(line))/100);
+                            } else {
+                                console.error("Una partita non aveva importi.")
+                                // TODO: show some error?
+                            }
+                        }
+                    });
+
+                    let linesForExcel = [];
+                    for (let line in newLines) {
+                        linesForExcel.push(newLines[line]);
+                    }
+
+                    let workbook = XLSX.utils.book_new();
+                    const worksheet = XLSX.utils.json_to_sheet(linesForExcel);
+                    worksheet["!cols"] = [
+                        { width: 8 },
+                        { width: 12 },
+                        { width: 16 },
+                        { width: 17 },
+                        { width: 18 },
+                        { width: 12 },
+                        { width: 15 },
+                        { width: 16 },
+                        { width: 16 },
+                        { width: 15 },
+                        { width: 29 },
+                    ];
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Foglio1");
+                    document.getElementById("linkExcelFormatDiscarichi").addEventListener(
+                        "click",
+                        event => {
+                            event.preventDefault();
+                            XLSX.writeFile(workbook, "format_discarichi.xlsx", { cellStyles: true });
+                        },
+                        true
+                    );
+                }
+
+                function createCoattivoTxtFile() {
+                    let newMinutaCoattiva = "";
+                    /*coattivo290.forEach(line => {
+                        newMinutaCoattiva += line + "\r\n";
+                    });*/
+                    coattivo290.forEach((line, index) => {
+                        newMinutaCoattiva += line;
+                        if (index < coattivo290.length - 1) {
+                            newMinutaCoattiva += "\r\n";
+                        }
+                    });
+
+                    const text = newMinutaCoattiva;
+                    const data = new TextEncoder(
+                        "windows-1252",
+                        { NONSTANDARD_allowLegacyEncoding: true }
+                    ).encode(text); // now `data` is an Uint8Array
+
+                    const blob = new Blob([data], { type: "text/plain" }); // here you have your ANSI Blob
+
+                    let link = document.getElementById("linkTxtCoattivoAder");
+                    link.setAttribute("href", window.URL.createObjectURL(blob));
+                    link.setAttribute("download", "minuta 290 coattivo.txt");
+                }
+
+                /**
+                 * Populates the minute arrays for the coattivo group and the discarico group.
+                 * 
+                 * @param {Set} partiteTrovate
+                 */
+                function createNewMinute(partiteTrovate) {
+                    original290.forEach(line => {
+                        if (isN0(line) || isN1(line) || isN5(line) || isN9(line) || isNR(line)) {
+                            coattivo290.push(line);
+                            discarico290.push(line);
+                        } else {
+                            if (partiteTrovate.has(getCodicePartitaFromN(line))) {
+                                //console.log('here');
+                                discarico290.push(line);
+                            } else {
+                                coattivo290.push(line);
+                            }
+                        };
+                    });
+
+                    updateMinutaClosing(coattivo290);
+                    updateMinutaClosing(discarico290);
+                }
+
+            }; //End windows on load
+
+            function updateFileDetails(original290) {
+                let nLettere = 0;
+                let totImposta = 0;
+                original290.forEach(line => {
+                    if (isN2(line)) {
+                        nLettere++;
+                    }
+                    if (isN4(line)) {
+                        totImposta += parseInt(getImpostaFromN4(line));
+                    }
+                });
+
+                document.getElementById("displayNLettere").innerText = nLettere;
+                document.getElementById("displayTotImporto").innerText = (totImposta/100).toFixed(2) + " €";
+            }
+
+            function getCodiciPartiteFromCodiceFiscale(minuta, codiceFiscale) {
+                let partite = [];
+                minuta.forEach(line => {
+                    if (isN2(line) && getCodiceFiscaleFromN2(line) === codiceFiscale) {
+                        partite.push(getCodicePartitaFromN(line));
+                    }
+                });
+
+                return partite;
+            }
+
+            function is290(result) {
+                let found = false;
+                result.split(/r?\n/, 3).forEach(line => {
+                    if (isN0(line)) {
+                        found = true;
+                    }
+                });
+
+                return found;
+            }
+
+            function hasOnly1N1(result) {
+                let n = 0;
+                result.split(/r?\n/).forEach(line => {
+                    if (isN1(line)) {
+                        n++;
+                    }
+                });
+
+                return n === 1;
+            }
+
+            function updateFilename(name) {
+                document.getElementById("displayedFilename").innerText = name;
+            }
+
+            function getNAvvisoFromPartita(partita) {
+                return partita.substring(1, 12)
+            }
+
+            /**
+             * Update the N5 and N9 line.
+             * 
+             * @param {string[]} minuta
+             */
+            function updateMinutaClosing(minuta) {
+                let totN0 = 0;
+                let totN1 = 0;
+                let totN2 = 0;
+                let totN3 = 0;
+                let totN4 = 0;
+                let totN5 = 0;
+                let totN9 = 0;
+                let totNR = 0;
+                let totNP = 0;
+                let totImposta = 0;
+
+                // First we get the totals
+                minuta.forEach(line => {
+                    if (isN0(line)) {
+                        totN0++;
+                    } else if (isN1(line)) {
+                        totN1++;
+                    } else if (isN2(line)) {
+                        totN2++;
+                    } else if (isN3(line)) {
+                        totN3++;
+                    } else if (isN4(line)) {
+                        totN4++;
+                        totImposta += parseInt(getImpostaFromN4(line));
+                    } else if (isN5(line)) {
+                        totN5++;
+                    } else if (isN9(line)) {
+                        totN9++;
+                    } else if (isNR(line)) {
+                        totNR++;
+                    } else if (isNP(line)) {
+                        totNP++;
+                    }
+                });
+
+                // Then we update N5 and N9
+                minuta.forEach((line, key) => {
+                    if (isN5(line)) {
+                        let front = line.substring(0, 10);
+                        let end = line.substring(67);
+                        let newLine = front
+                                    + makeStandardLenghtString(7, (totN1 + totNR + totN2 + totNP + totN3 + totN4 + totN5).toString())
+                                    + makeStandardLenghtString(7, totN2.toString())
+                                    + makeStandardLenghtString(7, totN3.toString())
+                                    + makeStandardLenghtString(7, totN4.toString())
+                                    + makeStandardLenghtString(15, totImposta.toString())
+                                    + makeStandardLenghtString(7, totNR.toString())
+                                    + makeStandardLenghtString(7, totNP.toString())
+                                    + end;
+
+                        minuta[key] = newLine;
+                    }
+
+                    if (isN9(line)) {
+                        let front = line.substring(0, 7);
+                        let end = line.substring(63);
+                        let newLine = front
+                                    + makeStandardLenghtString(7, (totN0 + totN1 + totNR + totN2 + totNP + totN3 + totN4 + totN5 + totN9).toString())
+                                    + makeStandardLenghtString(7, totN1.toString())
+                                    + makeStandardLenghtString(7, totN2.toString())
+                                    + makeStandardLenghtString(7, totN3.toString())
+                                    + makeStandardLenghtString(7, totN4.toString())
+                                    + makeStandardLenghtString(7, totN5.toString())
+                                    + makeStandardLenghtString(7, totNR.toString())
+                                    + makeStandardLenghtString(7, totNP.toString())
+                                    + end;
+
+                        minuta[key] = newLine;
+                    }
+                });
+            }
+
+            /**
+             * Ex. 45 -> 0000045
+             */
+            function makeStandardLenghtString(length, line) {
+                let front = "";
+                for (i = 1; i <= length - line.length; i++) {
+                    front += "0";
+                }
+
+                return front + line;
+            }
+
+            function makeAnagraficaObj(
+                cognome = "",
+                nome = "",
+                dataNascita = "",
+                sesso = "",
+                codiceFiscale = "",
+                indirizzo = "",
+                localita = "",
+                cap = ""
+            ) {
+                return {
+                    "Cognome": cognome,
+                    "Nome": nome,
+                    "Data di nascita": dataNascita,
+                    "Sesso": sesso,
+                    "Codice Fiscale": codiceFiscale,
+                    "Indirizzo": indirizzo,
+                    "Località": localita,
+                    "CAP": cap,
+                };
+            }
+
+            function makeDescriptionsObj(
+                descrizione1 = "",
+                descrizione2 = "",
+                descrizione3 = ""
+            ) {
+                return {
+                    "Descrizione 1": descrizione1,
+                    "Descrizione 2": descrizione2,
+                    "Descrizione 3": descrizione3,
+                };
+            }
+
+            function extractNDocFromPartita(partita) {
+                return partita.substring(1, 12);
+            }
+
+
+            const showAlertNot290 = () => document.getElementById("alertNot290").removeAttribute("hidden");
+            const hideAlertNot290 = () => document.getElementById("alertNot290").setAttribute("hidden", "");
+
+            const showAlertMoreThanOneRuolo = () => document.getElementById("alertMoreThanOneRuolo").removeAttribute("hidden");
+            const hideAlertMoreThanOneRuolo = () => document.getElementById("alertMoreThanOneRuolo").setAttribute("hidden", "");
+
+            const showAlertNoneFound = () => document.getElementById("alertNoneFound").removeAttribute("hidden");
+            const hideAlertNoneFound = () => document.getElementById("alertNoneFound").setAttribute("hidden", "");
+
+            const showAlertInvalidCFs = cfs => {
+                let text = "";
+                cfs.forEach((cf, i) => {
+                    text += cf;
+                    if (cfs.length - 1 > i) {
+                        text += ", ";
+                    }
+                });
+                document.getElementById("invalidCFsList").innerText = text;
+                document.getElementById("alertInvalidCFs").removeAttribute("hidden");
+            }
+            const hideAlertInvalidCFs = () => document.getElementById("alertInvalidCFs").setAttribute("hidden", "");
+
+            const showAlertSomeNotFound = cfs => {
+                let text = "";
+                cfs.forEach((cf, i) => {
+                    text += cf;
+                    if (cfs.length - 1 > i) {
+                        text += ", ";
+                    }
+                });
+                document.getElementById("notFoundCFsList").innerText = text;
+                document.getElementById("alertSomeNotFound").removeAttribute("hidden");
+            }
+            const hideAlertSomeNotFound = () => document.getElementById("alertSomeNotFound").setAttribute("hidden", "");
+           
+
+            const isN0 = line => line.substring(0, 2) === "N0";
+            const isN1 = line => line.substring(0, 2) === "N1";
+            const isNR = line => line.substring(0, 2) === "NR";
+            const isN2 = line => line.substring(0, 2) === "N2";
+            const isNP = line => line.substring(0, 2) === "NP";
+            const isN3 = line => line.substring(0, 2) === "N3";
+            const isN4 = line => line.substring(0, 2) === "N4";
+            const isN5 = line => line.substring(0, 2) === "N5";
+            const isN9 = line => line.substring(0, 2) === "N9";
+
+            // N2 related content
+            const getCodiceFiscaleFromN2 = line => line.substring(24, 40);
+            const getIndirizzoFromN2 = line => line.substring(56, 86);
+            const getCAPFromN2 = line => line.substring(99, 104);
+            const getCodiceBelfioreFromN2 = line => line.substring(104, 108);
+            const getLocalitaFromN2 = line => line.substring(108, 129);
+            const getCognomeFromN2 = line => line.substring(209, 233);
+            const getNomeFromN2 = line => line.substring(233, 253);
+            const getSessoFromN2 = line => line.substring(253, 254);
+            const getDataNascitaFromN2 = line => line.substring(254, 262);
+            const getCodiceBelfioreNascitaFromN2 = line => line.substring(262, 266);
+
+            // NP related content
+            const getDescription1 = line => line.substring(24, 104);
+            const getDescription2 = line => line.substring(104, 184);
+            const getDescription3 = line => line.substring(184, 264);
+
+            // N4 related content
+            const getAnnoRiferimentoFromN4 = line => line.substring(24, 28);
+            const getImpostaFromN4 = line => line.substring(45, 58);
+            const getInformazioniFromN4 = line => line.substring(70, 145);
+
+            // Common for N2, NP, N3, N4
+            const getCodicePartitaFromN = line => line.substring(10, 24);
+
+            //console.log(reader.result.split(/r?\n/)[0])
+        </script>
+    </body>
+</html>
